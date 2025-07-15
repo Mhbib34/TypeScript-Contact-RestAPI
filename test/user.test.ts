@@ -49,3 +49,46 @@ describe("POST /api/users", () => {
     expect(res.status).toBe(400);
   });
 });
+
+describe("POST /api/users/login", () => {
+  beforeEach(async () => {
+    await UserTest.createUser();
+  });
+
+  afterEach(async () => {
+    await UserTest.deleteUser();
+  });
+
+  it("should login user", async () => {
+    const res = await supertest(web).post("/api/users/login").send({
+      username: "test",
+      password: "test123",
+    });
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+    expect(res.body.data.username).toBe("test");
+    expect(res.body.data.name).toBe("test");
+    expect(res.body.data.token).toBeDefined();
+  });
+
+  it("should cant login user if password is invalid", async () => {
+    const res = await supertest(web).post("/api/users/login").send({
+      username: "test",
+      password: "test111",
+    });
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(401);
+  });
+
+  it("should cant login user if username is invalid", async () => {
+    const res = await supertest(web).post("/api/users/login").send({
+      username: "eee",
+      password: "test123",
+    });
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(401);
+  });
+});
