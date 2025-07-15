@@ -123,3 +123,79 @@ describe("GET /api/auth", () => {
     expect(res.body.errors).toBeDefined();
   });
 });
+
+describe("PATCH /api/auth", () => {
+  beforeEach(async () => {
+    await UserTest.createUser();
+  });
+
+  afterEach(async () => {
+    await UserTest.deleteUser();
+  });
+
+  it("should can update user", async () => {
+    const res = await supertest(web)
+      .patch("/api/auth")
+      .set("X-API-TOKEN", "test")
+      .send({
+        name: "test2",
+        password: "test12345",
+      });
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+    expect(res.body.data.username).toBe("test");
+    expect(res.body.data.name).toBe("test2");
+  });
+
+  it("should cant update user if token is invalid", async () => {
+    const res = await supertest(web)
+      .patch("/api/auth")
+      .set("X-API-TOKEN", "adasda")
+      .send({
+        name: "test2",
+        password: "test12345",
+      });
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(401);
+    expect(res.body.errors).toBeDefined();
+  });
+
+  it("should cant update user if data is invalid", async () => {
+    const res = await supertest(web)
+      .patch("/api/auth")
+      .set("X-API-TOKEN", "test")
+      .send({
+        name: "",
+        password: "",
+      });
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(400);
+  });
+
+  it("should be able to change password", async () => {
+    const res = await supertest(web)
+      .patch("/api/auth")
+      .set("X-API-TOKEN", "test")
+      .send({
+        password: "test1234",
+      });
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+  });
+
+  it("should be able to change name", async () => {
+    const res = await supertest(web)
+      .patch("/api/auth")
+      .set("X-API-TOKEN", "test")
+      .send({
+        name: "test2",
+      });
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+  });
+});

@@ -6,3 +6,4 @@ export const apiRouter = express.Router();
 apiRouter.use(authMiddleware);
 
 apiRouter.get("/", UserController.get);
+apiRouter.patch("/", UserController.update);
