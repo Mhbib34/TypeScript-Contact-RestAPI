@@ -26,3 +26,5 @@ out/
 
 # VSCode settings (opsional)
 .vscode/
+
+/src/generated/prisma
