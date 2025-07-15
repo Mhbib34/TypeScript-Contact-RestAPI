@@ -92,3 +92,34 @@ describe("POST /api/users/login", () => {
     expect(res.status).toBe(401);
   });
 });
+
+describe("GET /api/auth", () => {
+  beforeEach(async () => {
+    await UserTest.createUser();
+  });
+
+  afterEach(async () => {
+    await UserTest.deleteUser();
+  });
+
+  it("should can get user", async () => {
+    const res = await supertest(web)
+      .get("/api/auth")
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+    expect(res.body.data.username).toBe("test");
+    expect(res.body.data.name).toBe("test");
+  });
+
+  it("should cant get user if token is invalid", async () => {
+    const res = await supertest(web)
+      .get("/api/auth")
+      .set("X-API-TOKEN", "adasda");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(401);
+    expect(res.body.errors).toBeDefined();
+  });
+});
