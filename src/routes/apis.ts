@@ -7,3 +7,4 @@ apiRouter.use(authMiddleware);
 
 apiRouter.get("/", UserController.get);
 apiRouter.patch("/", UserController.update);
+apiRouter.delete("/", UserController.logout);

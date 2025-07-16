@@ -2,6 +2,7 @@ import supertest from "supertest";
 import { web } from "../src/config/web";
 import { logger } from "../src/config/logging";
 import { UserTest } from "./test.util";
+import { be } from "zod/locales";
 
 describe("POST /api/users", () => {
   afterEach(async () => {
@@ -197,5 +198,36 @@ describe("PATCH /api/auth", () => {
     logger.debug(res.body);
     console.log(res.body);
     expect(res.status).toBe(200);
+  });
+});
+
+describe("DELETE /api/auth", () => {
+  beforeEach(async () => {
+    await UserTest.createUser();
+  });
+
+  afterEach(async () => {
+    await UserTest.deleteUser();
+  });
+
+  it("should be able to logout", async () => {
+    const res = await supertest(web)
+      .delete("/api/auth")
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+
+    const user = await UserTest.get();
+    expect(user.token).toBeNull();
+  });
+
+  it("should not be able to logout if token is invalid", async () => {
+    const res = await supertest(web)
+      .delete("/api/auth")
+      .set("X-API-TOKEN", "salah");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(401);
   });
 });
