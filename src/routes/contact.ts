@@ -6,3 +6,4 @@ export const contactRouter = express.Router();
 contactRouter.use(authMiddleware);
 
 contactRouter.post("/", ContactController.create);
+contactRouter.get("/:contactId", ContactController.get);
