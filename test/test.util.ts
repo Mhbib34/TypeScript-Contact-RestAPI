@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { Contact, User } from "@prisma/client";
 import { prismaClient } from "../src/config/database";
 import bcrypt from "bcrypt";
 
@@ -44,5 +44,30 @@ export class ContactTest {
         username: "test",
       },
     });
+  }
+
+  static async createContact() {
+    await prismaClient.contact.create({
+      data: {
+        first_name: "test contact",
+        last_name: "test contact",
+        email: "test@test.com",
+        phone: "089999999999",
+        username: "test",
+      },
+    });
+  }
+
+  static async get(): Promise<Contact> {
+    const contact = await prismaClient.contact.findFirst({
+      where: {
+        username: "test",
+      },
+    });
+
+    if (!contact) {
+      throw new Error("Contact is not found");
+    }
+    return contact;
   }
 }

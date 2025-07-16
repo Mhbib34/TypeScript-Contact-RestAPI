@@ -17,4 +17,17 @@ export class ContactController {
       next(error);
     }
   }
+  static async get(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const contactId = parseInt(req.params.contactId);
+      const result = await ContactService.get(req.user!, contactId);
+      res.status(200).json({
+        success: true,
+        message: "Get Contact Successfully",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

@@ -61,3 +61,52 @@ describe("POST /api/contacts", () => {
     expect(res.status).toBe(400);
   });
 });
+
+describe("GET /api/contacts/:contactId", () => {
+  beforeEach(async () => {
+    await UserTest.createUser();
+    await ContactTest.createContact();
+  });
+
+  afterEach(async () => {
+    await ContactTest.deleteContact();
+    await UserTest.deleteUser();
+  });
+
+  it("should can get contact", async () => {
+    const contact = await ContactTest.get();
+    const res = await supertest(web)
+      .get(`/api/contacts/${contact.id}`)
+      .set("X-API-TOKEN", "test");
+
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+    expect(res.body.data.id).toBeDefined();
+    expect(res.body.data.first_name).toBe("test contact");
+    expect(res.body.data.last_name).toBe("test contact");
+    expect(res.body.data.email).toBe("test@test.com");
+    expect(res.body.data.phone).toBe("089999999999");
+  });
+
+  it("should reject get contact if token is invalid", async () => {
+    const contact = await ContactTest.get();
+    const res = await supertest(web)
+      .get(`/api/contacts/${contact.id}`)
+      .set("X-API-TOKEN", "salah");
+
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(401);
+  });
+
+  it("should reject get contact if contactId is invalid", async () => {
+    const res = await supertest(web)
+      .get(`/api/contacts/121`)
+      .set("X-API-TOKEN", "test");
+
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(404);
+  });
+});
