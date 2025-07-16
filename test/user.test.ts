@@ -2,7 +2,6 @@ import supertest from "supertest";
 import { web } from "../src/config/web";
 import { logger } from "../src/config/logging";
 import { UserTest } from "./test.util";
-import { be } from "zod/locales";
 
 describe("POST /api/users", () => {
   afterEach(async () => {
