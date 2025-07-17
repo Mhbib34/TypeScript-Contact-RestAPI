@@ -110,3 +110,82 @@ describe("GET /api/contacts/:contactId", () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe("PUT /api/contacts/:contactId", () => {
+  beforeEach(async () => {
+    await UserTest.createUser();
+    await ContactTest.createContact();
+  });
+
+  afterEach(async () => {
+    await ContactTest.deleteContact();
+    await UserTest.deleteUser();
+  });
+
+  it("should can update contact", async () => {
+    const contact = await ContactTest.get();
+    const res = await supertest(web)
+      .put(`/api/contacts/${contact.id}`)
+      .set("X-API-TOKEN", "test")
+      .send({
+        first_name: "test contact 2",
+        last_name: "test contact 2",
+        email: "test2@test.com",
+        phone: "089999999999",
+      });
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+    expect(res.body.data.id).toBeDefined();
+    expect(res.body.data.first_name).toBe("test contact 2");
+    expect(res.body.data.last_name).toBe("test contact 2");
+    expect(res.body.data.email).toBe("test2@test.com");
+    expect(res.body.data.phone).toBe("089999999999");
+  });
+  it("should reject update contact if token is invalid", async () => {
+    const contact = await ContactTest.get();
+    const res = await supertest(web)
+      .put(`/api/contacts/${contact.id}`)
+      .set("X-API-TOKEN", "salah")
+      .send({
+        first_name: "test contact 2",
+        last_name: "test contact 2",
+        email: "test2@test.com",
+        phone: "089999999999",
+      });
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(401);
+  });
+
+  it("should reject update contact if contactId is invalid", async () => {
+    const res = await supertest(web)
+      .put(`/api/contacts/121`)
+      .set("X-API-TOKEN", "test")
+      .send({
+        first_name: "test contact 2",
+        last_name: "test contact 2",
+        email: "test2@test.com",
+        phone: "089999999999",
+      });
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(404);
+  });
+
+  it("should reject update contact if body is invalid", async () => {
+    const contact = await ContactTest.get();
+    const res = await supertest(web)
+      .put(`/api/contacts/${contact.id}`)
+      .set("X-API-TOKEN", "test")
+      .send({
+        first_name: "",
+        last_name: "",
+        email: "test",
+        phone: "0899999999999999999999999999",
+      });
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(400);
+  });
+});
