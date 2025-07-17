@@ -15,6 +15,7 @@ contactRouter.get("/", ContactController.search);
 //adress
 
 contactRouter.post("/:contactId/addresses", AddressController.create);
+contactRouter.get("/:contactId/addresses", AddressController.list);
 contactRouter.get("/:contactId/addresses/:addressId", AddressController.get);
 contactRouter.put("/:contactId/addresses/:addressId", AddressController.update);
 contactRouter.delete(
