@@ -252,3 +252,59 @@ describe("PUT /api/contacts/:contactId/addresses/:addressId", () => {
     expect(res.status).toBe(400);
   });
 });
+
+describe("DELETE /api/contacts/:contactId/addresses/:addressId", () => {
+  beforeEach(async () => {
+    await UserTest.createUser();
+    await ContactTest.createContact();
+    await AddressTest.createAddress();
+  });
+
+  afterEach(async () => {
+    await AddressTest.deleteAll();
+    await ContactTest.deleteContact();
+    await UserTest.deleteUser();
+  });
+
+  it("should can delete address", async () => {
+    const contact = await ContactTest.get();
+    const address = await AddressTest.get();
+    const res = await supertest(web)
+      .delete(`/api/contacts/${contact.id}/addresses/${address.id}`)
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+  });
+
+  it("should reject delete address if token is invalid", async () => {
+    const contact = await ContactTest.get();
+    const address = await AddressTest.get();
+    const res = await supertest(web)
+      .delete(`/api/contacts/${contact.id}/addresses/${address.id}`)
+      .set("X-API-TOKEN", "salah");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(401);
+  });
+
+  it("should reject delete address if contact is not found", async () => {
+    const address = await AddressTest.get();
+    const res = await supertest(web)
+      .delete(`/api/contacts/1121/addresses/${address.id}`)
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(404);
+  });
+
+  it("should reject delete address if address is not found", async () => {
+    const contact = await ContactTest.get();
+    const res = await supertest(web)
+      .delete(`/api/contacts/${contact.id}/addresses/2121221`)
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(404);
+  });
+});

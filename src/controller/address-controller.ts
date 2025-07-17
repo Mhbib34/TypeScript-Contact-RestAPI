@@ -2,6 +2,7 @@ import { NextFunction, Response } from "express";
 import {
   CreateAddressRequest,
   GetAddress,
+  RemoveAddress,
   UpdateAddressRequest,
 } from "../model/address-model";
 import { UserRequest } from "../type/user-request";
@@ -49,6 +50,22 @@ export class AddressController {
         success: true,
         message: "Get Address Successfully",
         data: response,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async remove(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const request: RemoveAddress = {
+        id: parseInt(req.params.addressId),
+        contactId: parseInt(req.params.contactId),
+      };
+      await AddressService.remove(req.user!, request);
+      res.status(200).json({
+        success: true,
+        message: "Remove Address Successfully",
       });
     } catch (error) {
       next(error);
