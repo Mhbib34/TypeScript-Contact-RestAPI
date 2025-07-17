@@ -15,7 +15,7 @@ export type UpdateAddressRequest = {
   city?: string;
   province?: string;
   country?: string;
-  postal_code?: string;
+  postal_code: string;
 };
 
 export type AddressResponse = {

@@ -21,7 +21,7 @@ export class AddressValidation {
     city: z.string().min(1).max(100).optional(),
     province: z.string().min(1).max(100).optional(),
     country: z.string().min(1).max(100).optional(),
-    postal_code: z.string().min(1).max(100).optional(),
+    postal_code: z.string().min(1).max(100),
   });
 
   static readonly GET: ZodType<GetAddress> = z.object({
