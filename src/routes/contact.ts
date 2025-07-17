@@ -16,3 +16,4 @@ contactRouter.get("/", ContactController.search);
 
 contactRouter.post("/:contactId/addresses", AddressController.create);
 contactRouter.get("/:contactId/addresses/:addressId", AddressController.get);
+contactRouter.put("/:contactId/addresses/:addressId", AddressController.update);
