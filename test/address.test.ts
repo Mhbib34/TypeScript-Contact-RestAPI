@@ -308,3 +308,46 @@ describe("DELETE /api/contacts/:contactId/addresses/:addressId", () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe("GET /api/contacts/:contactId/addresses", () => {
+  beforeEach(async () => {
+    await UserTest.createUser();
+    await ContactTest.createContact();
+    await AddressTest.createAddress();
+  });
+
+  afterEach(async () => {
+    await AddressTest.deleteAll();
+    await ContactTest.deleteContact();
+    await UserTest.deleteUser();
+  });
+
+  it("should can list addresses", async () => {
+    const contact = await ContactTest.get();
+    const res = await supertest(web)
+      .get(`/api/contacts/${contact.id}/addresses`)
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+  });
+
+  it("should reject list addresses if token is invalid", async () => {
+    const contact = await ContactTest.get();
+    const res = await supertest(web)
+      .get(`/api/contacts/${contact.id}/addresses`)
+      .set("X-API-TOKEN", "salah");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(401);
+  });
+
+  it("should reject list addresses if contact is not found", async () => {
+    const res = await supertest(web)
+      .get(`/api/contacts/1121/addresses`)
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(404);
+  });
+});
