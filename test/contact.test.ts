@@ -189,3 +189,44 @@ describe("PUT /api/contacts/:contactId", () => {
     expect(res.status).toBe(400);
   });
 });
+
+describe("DELETE /api/contacts/:contactId", () => {
+  beforeEach(async () => {
+    await UserTest.createUser();
+    await ContactTest.createContact();
+  });
+
+  afterEach(async () => {
+    await ContactTest.deleteContact();
+    await UserTest.deleteUser();
+  });
+
+  it("should can delete contact", async () => {
+    const contact = await ContactTest.get();
+    const res = await supertest(web)
+      .delete(`/api/contacts/${contact.id}`)
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+  });
+
+  it("should reject delete contact if token is invalid", async () => {
+    const contact = await ContactTest.get();
+    const res = await supertest(web)
+      .delete(`/api/contacts/${contact.id}`)
+      .set("X-API-TOKEN", "salah");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(401);
+  });
+
+  it("should reject delete contact if contactId is invalid", async () => {
+    const res = await supertest(web)
+      .delete(`/api/contacts/121`)
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(404);
+  });
+});

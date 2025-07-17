@@ -45,4 +45,17 @@ export class ContactController {
       next(error);
     }
   }
+
+  static async remove(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const contactId = parseInt(req.params.contactId);
+      await ContactService.remove(req.user!, contactId);
+      res.status(200).json({
+        success: true,
+        message: "Remove Contact Successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
