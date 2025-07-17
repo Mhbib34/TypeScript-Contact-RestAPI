@@ -2,6 +2,7 @@ import z, { ZodType } from "zod";
 import {
   CreateAddressRequest,
   GetAddress,
+  RemoveAddress,
   UpdateAddressRequest,
 } from "../model/address-model";
 
@@ -25,6 +26,10 @@ export class AddressValidation {
   });
 
   static readonly GET: ZodType<GetAddress> = z.object({
+    contactId: z.number().positive(),
+    id: z.number().positive(),
+  });
+  static readonly REMOVE: ZodType<RemoveAddress> = z.object({
     contactId: z.number().positive(),
     id: z.number().positive(),
   });
