@@ -15,3 +15,4 @@ contactRouter.get("/", ContactController.search);
 //adress
 
 contactRouter.post("/:contactId/addresses", AddressController.create);
+contactRouter.get("/:contactId/addresses/:addressId", AddressController.get);
