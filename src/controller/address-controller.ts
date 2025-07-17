@@ -48,7 +48,7 @@ export class AddressController {
       const response = await AddressService.update(req.user!, request);
       res.status(200).json({
         success: true,
-        message: "Get Address Successfully",
+        message: "Update Address Successfully",
         data: response,
       });
     } catch (error) {
