@@ -8,6 +8,15 @@ export type CreateAddressRequest = {
   country: string;
   postal_code: string;
 };
+export type UpdateAddressRequest = {
+  id: number;
+  contactId: number;
+  street?: string;
+  city?: string;
+  province?: string;
+  country?: string;
+  postal_code?: string;
+};
 
 export type AddressResponse = {
   id: number;
