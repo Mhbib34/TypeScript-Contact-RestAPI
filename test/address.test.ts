@@ -233,4 +233,22 @@ describe("PUT /api/contacts/:contactId/addresses/:addressId", () => {
     console.log(res.body);
     expect(res.status).toBe(404);
   });
+
+  it("should reject update address if postal code is invalid", async () => {
+    const contact = await ContactTest.get();
+    const address = await AddressTest.get();
+    const res = await supertest(web)
+      .put(`/api/contacts/${contact.id}/addresses/${address.id}`)
+      .set("X-API-TOKEN", "test")
+      .send({
+        street: "test street baru",
+        city: "test city baru",
+        province: "test province baru",
+        country: "test country baru",
+        postal_code: "",
+      });
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(400);
+  });
 });
