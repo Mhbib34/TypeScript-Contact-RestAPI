@@ -1,5 +1,9 @@
 import { NextFunction, Response } from "express";
-import { ContactRequest, UpdateContactRequest } from "../model/contact-model";
+import {
+  ContactRequest,
+  SearchContactRequest,
+  UpdateContactRequest,
+} from "../model/contact-model";
 import { ContactService } from "../service/contact-service";
 import { UserRequest } from "../type/user-request";
 
@@ -53,6 +57,26 @@ export class ContactController {
       res.status(200).json({
         success: true,
         message: "Remove Contact Successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async search(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const request: SearchContactRequest = {
+        name: req.query.name as string,
+        email: req.query.email as string,
+        phone: req.query.phone as string,
+        page: req.query.page ? parseInt(req.query.page as string) : 1,
+        size: req.query.size ? parseInt(req.query.size as string) : 10,
+      };
+      const result = await ContactService.search(req.user!, request);
+      res.status(200).json({
+        success: true,
+        message: "Search Contact Successfully",
+        ...result,
       });
     } catch (error) {
       next(error);
