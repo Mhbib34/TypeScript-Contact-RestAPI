@@ -230,3 +230,106 @@ describe("DELETE /api/contacts/:contactId", () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe("GET /api/contacts", () => {
+  beforeEach(async () => {
+    await UserTest.createUser();
+    await ContactTest.createContact();
+  });
+
+  afterEach(async () => {
+    await ContactTest.deleteContact();
+    await UserTest.deleteUser();
+  });
+
+  it("should can get contacts", async () => {
+    const res = await supertest(web)
+      .get("/api/contacts")
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+    expect(res.body.data[0].id).toBeDefined();
+    expect(res.body.data[0].first_name).toBe("test contact");
+    expect(res.body.data[0].last_name).toBe("test contact");
+    expect(res.body.data[0].email).toBe("test@test.com");
+    expect(res.body.data[0].phone).toBe("089999999999");
+    expect(res.body.paging.total_page).toBe(1);
+    expect(res.body.paging.current_page).toBe(1);
+    expect(res.body.paging.size).toBe(10);
+  });
+
+  it("should reject get contacts if token is invalid", async () => {
+    const res = await supertest(web)
+      .get("/api/contacts")
+      .set("X-API-TOKEN", "salah");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(401);
+  });
+
+  it("should can get contacts with query params first_name", async () => {
+    const res = await supertest(web)
+      .get("/api/contacts?first_name=test")
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+    expect(res.body.data[0].id).toBeDefined();
+    expect(res.body.data[0].first_name).toBe("test contact");
+    expect(res.body.data[0].last_name).toBe("test contact");
+    expect(res.body.data[0].email).toBe("test@test.com");
+    expect(res.body.data[0].phone).toBe("089999999999");
+    expect(res.body.paging.total_page).toBe(1);
+    expect(res.body.paging.current_page).toBe(1);
+    expect(res.body.paging.size).toBe(10);
+  });
+  it("should can get contacts with query params last_name", async () => {
+    const res = await supertest(web)
+      .get("/api/contacts?last_name=test")
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+    expect(res.body.data[0].id).toBeDefined();
+    expect(res.body.data[0].first_name).toBe("test contact");
+    expect(res.body.data[0].last_name).toBe("test contact");
+    expect(res.body.data[0].email).toBe("test@test.com");
+    expect(res.body.data[0].phone).toBe("089999999999");
+    expect(res.body.paging.total_page).toBe(1);
+    expect(res.body.paging.current_page).toBe(1);
+    expect(res.body.paging.size).toBe(10);
+  });
+  it("should can get contacts with query params email", async () => {
+    const res = await supertest(web)
+      .get("/api/contacts?email=test%40test.com")
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+    expect(res.body.data[0].id).toBeDefined();
+    expect(res.body.data[0].first_name).toBe("test contact");
+    expect(res.body.data[0].last_name).toBe("test contact");
+    expect(res.body.data[0].email).toBe("test@test.com");
+    expect(res.body.data[0].phone).toBe("089999999999");
+    expect(res.body.paging.total_page).toBe(1);
+    expect(res.body.paging.current_page).toBe(1);
+    expect(res.body.paging.size).toBe(10);
+  });
+  it("should can get contacts with query params phone", async () => {
+    const res = await supertest(web)
+      .get("/api/contacts?phone=089999999999")
+      .set("X-API-TOKEN", "test");
+    logger.debug(res.body);
+    console.log(res.body);
+    expect(res.status).toBe(200);
+    expect(res.body.data[0].id).toBeDefined();
+    expect(res.body.data[0].first_name).toBe("test contact");
+    expect(res.body.data[0].last_name).toBe("test contact");
+    expect(res.body.data[0].email).toBe("test@test.com");
+    expect(res.body.data[0].phone).toBe("089999999999");
+    expect(res.body.paging.total_page).toBe(1);
+    expect(res.body.paging.current_page).toBe(1);
+    expect(res.body.paging.size).toBe(10);
+  });
+});

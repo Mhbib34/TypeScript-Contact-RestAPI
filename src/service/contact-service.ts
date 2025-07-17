@@ -2,6 +2,7 @@ import { User } from "@prisma/client";
 import {
   ContactRequest,
   ContactResponse,
+  SearchContactRequest,
   toContactResponse,
   UpdateContactRequest,
 } from "../model/contact-model";
@@ -9,6 +10,7 @@ import { ContactValidation } from "../validation/contact-validation";
 import { Validation } from "../validation/validation";
 import { prismaClient } from "../config/database";
 import { ResponseError } from "../error/response-error";
+import { pagingResponse } from "../model/page";
 
 export class ContactService {
   static async checkContactMustExist(username: string, contactId: number) {
@@ -76,5 +78,75 @@ export class ContactService {
       },
     });
     return toContactResponse(result);
+  }
+
+  static async search(
+    user: User,
+    request: SearchContactRequest
+  ): Promise<pagingResponse<ContactResponse>> {
+    const searchRequest = Validation.validate(
+      ContactValidation.SEARCH,
+      request
+    );
+    const skip = (searchRequest.page - 1) * searchRequest.size;
+
+    const filters = [];
+    if (searchRequest.name) {
+      filters.push({
+        OR: [
+          {
+            first_name: {
+              contains: searchRequest.name,
+            },
+          },
+          {
+            last_name: {
+              contains: searchRequest.name,
+            },
+          },
+        ],
+      });
+    }
+
+    if (searchRequest.email) {
+      filters.push({
+        email: {
+          contains: searchRequest.email,
+        },
+      });
+    }
+
+    if (searchRequest.phone) {
+      filters.push({
+        phone: {
+          contains: searchRequest.phone,
+        },
+      });
+    }
+
+    const contacs = await prismaClient.contact.findMany({
+      where: {
+        username: user.username,
+        AND: filters,
+      },
+      skip,
+      take: searchRequest.size,
+    });
+
+    const total = await prismaClient.contact.count({
+      where: {
+        username: user.username,
+        AND: filters,
+      },
+    });
+
+    return {
+      data: contacs.map((contact) => toContactResponse(contact)),
+      paging: {
+        current_page: searchRequest.page,
+        size: searchRequest.size,
+        total_page: Math.ceil(total / searchRequest.size),
+      },
+    };
   }
 }

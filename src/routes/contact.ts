@@ -9,3 +9,4 @@ contactRouter.post("/", ContactController.create);
 contactRouter.put("/:contactId", ContactController.update);
 contactRouter.delete("/:contactId", ContactController.remove);
 contactRouter.get("/:contactId", ContactController.get);
+contactRouter.get("/", ContactController.search);
